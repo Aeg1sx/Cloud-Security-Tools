@@ -1,0 +1,29 @@
+rules:
+  - id: nodejs.security.ssrflibuv
+    languages:
+      - javascript
+    message: |
+      Unvalidated hostname passed to dns.lookup() may lead to SSRF
+      via libuv (CVE-2024-24806). Validate or whitelist hostnames
+      before DNS resolution.
+    severity: CRITICAL
+    metadata:
+      cwe: CWE-918
+      references:
+        - https://security.snyk.io/vuln/SNYK-UNMANAGED-LIBUVLIBUV-6234013
+        - https://github.com/libuv/libuv/security/advisories/GHSA-f74f-cvh7-c6q6
+    mode: taint
+    options:
+      taint_unify_mvars: true
+    pattern-sources:
+      - pattern-either:
+          - pattern: req.query.$HOST
+          - pattern: req.params.$HOST
+          - pattern: req.body.$HOST
+          - pattern: req.headers[$HEADER]
+          - pattern: req.cookies.$HOST
+        focus-metavariable: $HOST
+    pattern-sinks:
+      - pattern-either:
+          - pattern: dns.lookup($HOST, …)
+          - pattern: require('dns').lookup($HOST, …)

@@ -1,0 +1,18 @@
+rules:
+  - id: android-webview-javascript-enabled
+    pattern-either:
+      - pattern: |
+          $WEBVIEW.getSettings().setJavaScriptEnabled(true)
+      - pattern: |
+          $SETTINGS = $WEBVIEW.getSettings()
+          ...
+          $SETTINGS.setJavaScriptEnabled(true)
+    message: >
+      WebView has JavaScript enabled. This can be dangerous if loading untrusted
+      content. Consider disabling JavaScript if not required or implementing
+      proper content sanitization.
+    languages:
+      - java
+      - kotlin
+    severity: WARNING
+    confidence: MEDIUM

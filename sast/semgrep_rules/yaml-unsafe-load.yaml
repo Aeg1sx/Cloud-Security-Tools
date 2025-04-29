@@ -1,0 +1,40 @@
+rules:
+  - id: python.security.yaml-unsafe-load
+    languages:
+      - python
+    severity: CRITICAL
+    message: >
+      Avoid unsafe YAML loading with yaml.load() or yaml.full_load(), which can
+
+      execute arbitrary code (CVE-2020-1747). Use yaml.safe_load() or SafeLoader instead.
+    metadata:
+      cwe: CWE-94
+      references:
+        - https://nvd.nist.gov/vuln/detail/CVE-2020-1747
+    pattern-either:
+      - pattern-inside: |
+          import yaml
+          ...
+          yaml.load($CONTENT)
+      - pattern-inside: |
+          import yaml
+          ...
+          yaml.full_load($CONTENT)
+      - pattern-inside: |
+          from yaml import load
+          ...
+          load($CONTENT)
+      - pattern-inside: |
+          from yaml import full_load
+          ...
+          full_load($CONTENT)
+    pattern-not:
+      - pattern: yaml.safe_load($CONTENT)
+      - pattern: safe_load($CONTENT)
+    fix: |
+      # Bad:
+      data = yaml.load(raw)
+      # Good:
+      data = yaml.safe_load(raw)
+      # Or explicitly use SafeLoader:
+      data = yaml.load(raw, Loader=yaml.SafeLoader)

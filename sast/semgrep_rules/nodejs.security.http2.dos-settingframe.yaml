@@ -1,0 +1,30 @@
+rules:
+  - id: nodejs.security.http2.dos-settingframe
+    languages:
+      - javascript
+    severity: HIGH
+    message: |
+      http2.createServer() 호출 시 maxSessionMemory 또는 maxSettings
+      옵션을 설정하지 않으면 HTTP/2 CONTINUATION/SETTINGS 프레임 과다 처리로 인해
+      DoS가 발생할 수 있습니다. 세션 메모리 및 설정 한도를 명시적으로 구성하세요.
+    metadata:
+      cwe: CWE-400
+      references:
+        - https://nodejs.org/en/blog/vulnerability/april-2024-security-releases/
+        - https://nvd.nist.gov/vuln/detail/CVE-2024-27983
+        - https://github.com/advisories/GHSA-j65r-8hrg-qc6x
+    mode: taint
+    options:
+      taint_unify_mvars: true
+    pattern-sources:
+      - pattern-either:
+          - pattern: require('http2').createServer($OPTS?)
+          - pattern: http2.createServer($OPTS?)
+          - pattern: $VAR = require('http2'); ... $VAR.createServer($OPTS?)
+          - pattern: import http2 from 'http2'; ... http2.createServer($OPTS?)
+        focus-metavariable: $OPTS
+    pattern-sinks:
+      - pattern-either:
+          - pattern: "require('http2').createServer({ ..., maxSessionMemory: _, maxSettings:
+              _, ... })"
+          - pattern: "http2.createServer({ ..., maxSessionMemory: _, maxSettings: _, ... })"

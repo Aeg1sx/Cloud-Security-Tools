@@ -1,0 +1,11 @@
+rules:
+  - id: nextjs.security.middleware-bypass-cve
+    metadata:
+      cwe: CWE-863
+    severity: CRITICAL
+    message: "x-middleware-subrequest 헤더 변조로 인한 미들웨어 우회 시도 탐지, CVE-2025-29927. 버전
+      업그레이드 혹은 x-middleware-subrequest 비활성화 "
+    languages:
+      - javascript
+    pattern: |
+      $REQUEST.headers['x-middleware-subrequest'] == $ANY

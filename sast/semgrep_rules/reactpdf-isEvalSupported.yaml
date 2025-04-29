@@ -1,0 +1,35 @@
+rules:
+  - id: reactpdf.security.isEvalSupported
+    languages:
+      - javascript
+      - typescript
+    severity: HIGH
+    message: >
+      Detected configuration of pdfjs.GlobalWorkerOptions.isEvalSupported =
+      true,
+
+      which allows arbitrary code execution when rendering malicious PDFs (CVE-2024-34342).
+
+      Set isEvalSupported to false or upgrade to react-pdf ≥7.7.3/8.0.2.
+    metadata:
+      cwe: CWE-94
+      references:
+        - https://security.snyk.io/vuln/SNYK-JS-REACTPDF-6814518          :contentReference[oaicite:2]{index=2}
+        - https://nvd.nist.gov/vuln/detail/CVE-2024-34342                   :contentReference[oaicite:3]{index=3}
+        - https://github.com/wojtekmaj/react-pdf/commit/208f28dd47fe38c33ce4bac4205b2b0a0bb207fe
+          :contentReference[oaicite:4]{index=4}
+    pattern-either:
+      - pattern-inside: |
+          import { pdfjs } from "react-pdf"
+          pdfjs.GlobalWorkerOptions.isEvalSupported = true
+      - pattern-inside: |
+          const { pdfjs } = require("react-pdf")
+          pdfjs.GlobalWorkerOptions.isEvalSupported = true
+    pattern-not:
+      - pattern: pdfjs.GlobalWorkerOptions.isEvalSupported =
+          false       :contentReference[oaicite:5]{index=5}
+    fix: |
+      // Disable eval in PDF.js:
+      pdfjs.GlobalWorkerOptions.isEvalSupported = false
+      // Or upgrade react-pdf:
+      npm install react-pdf@^7.7.3

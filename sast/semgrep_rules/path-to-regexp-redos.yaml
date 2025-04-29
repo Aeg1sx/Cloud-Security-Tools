@@ -1,0 +1,16 @@
+rules:
+  - id: nodejs.dependency.path-to-regexp-redos-cve-2024-45296
+    languages:
+      - json
+      - yaml
+    severity: HIGH
+    message: >
+      Detected path-to-regexp version vulnerable to Regular Expression DoS
+      (CVE-2024-45296). Upgrade to ≥6.2.1.
+    metadata:
+      cwe: CWE-1333
+      references:
+        - https://github.com/pillarjs/path-to-regexp/security/advisories/GHSA-xxxxx
+    pattern-either:
+      - pattern-inside: '"path-to-regexp": "<6.2.1"'
+      - pattern-regex: path-to-regexp@[0-9]+\.[0-9]+\.[0-1]$

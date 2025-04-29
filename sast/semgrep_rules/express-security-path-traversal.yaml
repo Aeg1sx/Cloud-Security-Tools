@@ -1,0 +1,25 @@
+rules:
+  - id: express.security.path-traversal
+    languages:
+      - javascript
+      - typescript
+    severity: HIGH
+    message: |
+      User-controlled path used in fs.readFileSync() may allow
+      directory traversal. Normalize and validate paths against
+      a base directory (e.g., with path.resolve and prefix check).
+    metadata:
+      cwe: CWE-22
+      references:
+        - https://owasp.org/www-community/attacks/Path_Traversal
+    mode: taint
+    options:
+      taint_unify_mvars: true
+    pattern-sources:
+      - pattern-either:
+          - pattern: req.params.$PATH
+          - pattern: req.query.$PATH
+          - pattern: req.body.$PATH
+        focus-metavariable: $PATH
+    pattern-sinks:
+      - pattern: fs.readFileSync($PATH, …)

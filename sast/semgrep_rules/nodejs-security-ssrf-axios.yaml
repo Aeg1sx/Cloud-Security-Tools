@@ -1,0 +1,21 @@
+rules:
+  - id: nodejs.security.ssrf.axios
+    languages:
+      - javascript
+    severity: ERROR
+    message: Unvalidated URL이 axios 호출에 사용되어 SSRF 가능성이 있습니다.
+    patterns:
+      - pattern: axios.$METHOD($URL, ...)
+    fix: |
+      if (allowedHosts.includes(new URL($URL).hostname)) {
+        axios.$METHOD($URL, ...)
+      }
+    metadata:
+      cwe: CWE-918
+      references:
+        - https://snyk.io/vuln/SNYK-UNMANAGED-LIBUVLIBUV-6234013
+    pattern-not:
+      - pattern: |
+          if (isValidUrl($URL)) {
+            axios.$METHOD($URL, ...)
+          }

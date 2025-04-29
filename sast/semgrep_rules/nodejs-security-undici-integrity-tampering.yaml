@@ -1,0 +1,17 @@
+rules:
+  - id: nodejs.security.undici.integrity-tampering
+    languages:
+      - javascript
+    severity: ERROR
+    message: undici.fetch의 'integrity' 옵션 조작 허용. 무결성 검증 시 엄격한 정규식 혹은 화이트리스트 기반 해시 값만
+      허용하세요. :contentReference[oaicite:12]{index=12}
+    pattern: "$ANY.fetch($URL, { integrity: $ANY })"
+    fix: ""
+    metadata:
+      category: security
+      cwe: CWE-20
+      owasp: A05:2021
+    pattern-not:
+      - pattern: >
+          require('undici').fetch($URL, { integrity: /^sha256-[A-Za-z0-9+/=]+$/
+          })
